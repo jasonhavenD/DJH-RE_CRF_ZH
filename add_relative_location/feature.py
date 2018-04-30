@@ -19,25 +19,36 @@ def set_entity_pos(num, feature, entity, index, sent, is_entity=False):
 	feature['POS' + str(num)] = sent[index].split('/')[1]
 
 
+'''
+特征加入相对位置
+ORDER
+0:e1 e2
+1:e2 e1
+'''
+
 if __name__ == '__main__':
-	input = 'corpora/sents_with_pos.txt'
-	features_file = 'result/features.pickle'
+	input = '../corpora/sents_with_pos.txt'
+	features_file = '../result/features.pickle'
 
 	with open(input, 'r', encoding='utf-8') as f:
 		rows = f.readlines()
 
 	features = []
-	# dict_keys(['rel', 'E1-0', 'POS1-0', 'NE1-0', 'E1-2', 'POS1-2', 'NE1-2', 'E1-1', 'POS1-1', 'NE1-1', 'E1+1', 'POS1+1', 'NE1+1', 'E1+2', 'POS1+2', 'NE1+2', 'E2-0', 'POS2-0', 'NE2-0'])
 	for row in rows:  # 关系
-		# 实体1左2，实体1左1，实体1，实体1右1，实体1右2,实体1开始、实体1结束
-		# 实体2左2，实体2左1，实体2，实体2右1，实体2右2,实体2开始、实体2结束
-		feature = {'rel': 'None', 'E1-0': 'None', 'NE1-0': 'None', 'POS1-0': 'None', 'POS1-2': 'None', 'POS1-1': 'None',
+		feature = { 'ORDER': '0','rel': 'None', 'E1-0': 'None', 'NE1-0': 'None', 'POS1-0': 'None', 'POS1-2': 'None', 'POS1-1': 'None',
 		           'POS1+1': 'None', 'POS1+2': 'None', 'E2-0': 'None', 'NE2-0': 'None', 'POS2-0': 'None',
 		           'POS2-2': 'None', 'POS2-1': 'None', 'POS2+1': 'None', 'POS2+2': 'None'}
 
 		pre, sent = row.strip().split('||')
 		rel, E1, E2, b1, e1, b2, e2 = pre.strip().split('\t')
 		b1, e1, b2, e2 = int(b1), int(e1), int(b2), int(e2)
+
+		# 设置相对位置
+		if b1 < b2:
+			feature['ORDER'] = '0'
+		else:
+			feature['ORDER'] = '1'
+
 		# 设置关系
 		feature['rel'] = rel
 		sent = sent.strip().split('\t')
@@ -87,7 +98,7 @@ if __name__ == '__main__':
 			e = sent[index].split('/')[0]
 			set_entity_pos('2+2', feature, e, index, sent)
 		features.append(feature)
-		print(feature.keys())
+		print(feature)
 
 	with open(features_file, 'wb') as f:
 		pickle.dump(features, f)
