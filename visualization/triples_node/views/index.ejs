@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>远程监督抽取关系三元组</title>
+    <meta charset="utf-8">
+    <script src="https://cdn.bootcss.com/echarts/4.0.4/echarts.min.js"></script>
+</head>
+<input value="<%= triples %>" hidden id='ipt'>
+
+<body>
+    <center>
+        <div id="neo4j" style="margin-top:20px;height: 880px;width: 1600px;">
+            <script type="text/javascript">
+                function strToJson(str) {
+                    var json = eval('(' + str + ')');
+                    return json;
+                }
+                //写死数据进行测试
+                var entities = '<%=  entities%>'.split(',');
+                var lst = document.getElementById('ipt').value.split("|")
+                var triples = []
+                for(var x of lst){
+                    triples.push(JSON.parse(x))
+                }
+                // 基于准备好的dom，初始化echarts实例
+                var myChart = echarts.init(document.getElementById('neo4j'));
+                // 指定图表的配置项和数据
+                var option = {}
+                option['title'] = {//图标信息
+                    link: 'http://172.19.12.30:7474/browser/'
+                }
+                option['tooltip'] = {},//提示框组件
+                    option['animationDurationUpdate'] = 1500//数据更新动画的时长
+                option['animationEasingUpdate'] = 'quinticInOut',//数据更新动画的缓动效果
+                    option['label'] = { normal: { show: true, textStyle: { fontSize: 12 }, } }
+                option['legend'] = {
+                    x: "center",
+                    show: true,
+                    data: []
+                }
+                var series = {
+                    type: 'graph',
+                    layout: 'force',
+                    symbolSize: 60,
+                    focusNodeAdjacency: true,
+                    roam: true,
+                    label: {
+                        normal: {
+                            show: true,
+                            textStyle: {
+                                fontSize: 14
+                            },
+                        }
+                    },
+                    //力量
+                    force: {
+                        repulsion: 1000
+                    },
+                    edgeSymbolSize: [4, 50],
+                    edgeLabel: {
+                        normal: {
+                            show: true,
+                            textStyle: {
+                                fontSize: 14//边字体
+                            },
+                            formatter: "{c}"
+                        }
+                    },
+                    //边属性
+                    lineStyle: {
+                        normal: {
+                            opacity: 0.9,
+                            width: 2,
+                            curveness: 0.15
+                        }
+                    }
+                }
+
+                //categories
+                var categories = []
+                //data
+                var data = []
+                //关系
+                var links = []
+
+                for (var e of entities) {
+                    categories.push({ name: e })
+                }
+                for (var name of entities) {
+                    node = {
+                        name: name,
+                        category: entities.indexOf(name),
+                        draggable: true,
+                    }
+                    data.push(node)
+                    option['legend']['data'].push(name)
+                }
+                for (var tpl of triples) {
+                    e1 = tpl['e1']
+                    rel = tpl['rel']
+                    e2 = tpl['e2']
+                    edge = {
+                        source: e1,
+                        target: e2,
+                        value: rel
+                    }
+                    links.push(edge)
+                }
+                series['categories'] = categories
+                series['data'] = data
+                series['links'] = links
+                option['series'] = series
+                // 使用刚指定的配置项和数据显示图表
+                myChart.setOption(option);
+            </script>
+        </div>
+    </center>
+</body>
+
+</html>

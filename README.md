@@ -34,6 +34,8 @@
 - save2neo4j.py 保存到neo4j
 - train_predict.py 训练、预测、打分
 - train_test_split.py 数据集分割
-- visualization_evaluation.html 模型评测可视化
-- visualization_evaluation2.html 模型评测可视化
-- visualization_triples.html 三元组可视化 运行环境 ：node.js
+- visualization
+	- triples_node node.js 环境下的演示
+	- visualization_evaluation.html 模型评测可视化
+	- visualization_evaluation2.html 模型评测可视化
+	- visualization_triples.html 三元组可视化 运行环境 ：node.js
