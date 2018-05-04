@@ -20,7 +20,7 @@ def split(rows):
 	E1_begin_ends = []
 	E2_begin_ends = []
 	sents = []
-	with open(triples_file, 'w', encoding='utf-8') as f:
+	with codecs.open(triples_file, 'w', encoding='utf-8') as f:
 		for row in rows:
 			rel, E1, E2, b1, e1, b2, e2, sent = row.strip().split('\t')
 			E1s.append(E1)
@@ -33,6 +33,7 @@ def split(rows):
 			f.write('\n')
 	return rels, E1s, E2s, E1_begin_ends, E2_begin_ends, sents
 
+import codecs
 
 if __name__ == '__main__':
 	# 关系，实体1,实体1开始、实体1结束，实体2，实体2开始，实体2结束，句子
@@ -47,18 +48,29 @@ if __name__ == '__main__':
 	sents_file = 'corpora/sents.txt'
 	triples_file = 'result/triples.txt'
 
-	nlp = StanfordCoreNLP("c:/stanford-corenlp-full-2018-02-27", lang='zh')
+	lexicon='lexicon/entities.txt'
 
-	with open(input, 'r', encoding='utf-8') as f:
-		rows = f.readlines()[:1000]
+	# nlp = StanfordCoreNLP("c:/stanford-corenlp-full-2018-02-27", lang='zh')
+	# nlp = StanfordCoreNLP("/home/jasonhaven/stanford-corenlp-full-2018-02-27", lang='zh')
+	nlp=StanfordCoreNLP('http://corenlp.run', port=80,lang='zh')
+	with codecs.open(input, 'r', encoding='utf-8') as f:
+		rows = f.readlines()
 
 	rels, E1s, E2s, E1_begin_ends, E2_begin_ends, sents = split(rows)
+
+	'''
+	生成实体词典
+	'''
+	entities = sorted(E1s + E2s)
+	with codecs.open(lexicon, 'w', encoding='utf-8') as f:
+		f.writelines('\n'.join(entities))
+	print('saved {}'.format('entities'))
 
 	# '''
 	# 生成关系字典
 	# '''
 	# rels = sorted(list(set(rels)))
-	# with open(rels_dict, 'w', encoding='utf-8') as f:
+	# with codecs.open(rels_dict, 'w', encoding='utf-8') as f:
 	# 	f.writelines('\n'.join(rels))
 	#
 	# print('saveed {}'.format('rels'))
@@ -67,7 +79,7 @@ if __name__ == '__main__':
 	# 生成实体字典
 	# '''
 	# entities = sorted(list(set(E1s + E2s)))
-	# with open(entities_dict, 'w', encoding='utf-8') as f:
+	# with codecs.open(entities_dict, 'w', encoding='utf-8') as f:
 	# 	f.writelines('\n'.join(entities))
 	#
 	# print('saveed {}'.format('entities'))
@@ -78,7 +90,7 @@ if __name__ == '__main__':
 	# postags_lst = set()
 	# ne_lst = set()
 	# sentences = []
-	# with open(sents_with_pos, 'w', encoding='utf-8') as f:
+	# with codecs.open(sents_with_pos, 'w', encoding='utf-8') as f:
 	# 	for i in range(len(rels)):
 	# 		line = ''
 	# 		rel = rels[i]
@@ -111,14 +123,14 @@ if __name__ == '__main__':
 	# '''
 	# 生成词性字典
 	# '''
-	# with open(postags_dict, 'w', encoding='utf-8') as f:
+	# with codecs.open(postags_dict, 'w', encoding='utf-8') as f:
 	# 	postags_lst = sorted(list(postags_lst))
 	# 	f.writelines('\n'.join(postags_lst))
 	# print('saveed {}'.format('postag_lst'))
 	# '''
 	# 生成实体标注字典
 	# '''
-	# with open(nes_dict, 'w', encoding='utf-8') as f:
+	# with codecs.open(nes_dict, 'w', encoding='utf-8') as f:
 	# 	ne_lst = sorted(list(ne_lst))
 	# 	f.writelines('\n'.join(ne_lst))
 	# print('saveed {}'.format('ne_lst'))
@@ -126,6 +138,6 @@ if __name__ == '__main__':
 	'''
 	生成原来句子
 	'''
-# with open(sents_file, 'w', encoding='utf-8') as f:
+# with codecs.open(sents_file, 'w', encoding='utf-8') as f:
 # 	f.writelines('\n'.join(sentences))
 # print('saveed {}'.format('sents_file'))
