@@ -22,7 +22,7 @@ if __name__ == '__main__':
 	input_triples = "result/triples.txt"
 
 	client = MongoClient()
-	client = MongoClient('172.19.12.30', 27017)
+	client = MongoClient('127.0.0.1', 27017)
 	db = client.relation_extraction  # 连接数据库，没有则自动创建
 	triples = db.distant_supervised  # 使用集合，没有则自动创建
 
